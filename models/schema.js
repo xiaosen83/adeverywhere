@@ -12,18 +12,30 @@ var AdSchema = new mongoose.Schema({
     model: String
 });
 var UserSchema = new mongoose.Schema({
-    name: String,
-    nick_name: String,
-    identity: String,
-    car_id: mongoose.Schema.Types.ObjectId,
+    role: String,
+    username: String,
+    passwd: String,
+    basic_info: {
+        city: String,
+        address: String,
+        phone: String,
+        email: String,
+        head_icon: String
+    },
+    cert_info: {
+        identity: String,
+        id_image: String
+    },
+    car_ids: [mongoose.Schema.Types.ObjectId]
 });
 var CarSchema = new mongoose.Schema({
-    user_id: mongoose.Schema.Types.ObjectId,
     plate_number: String,
-    my_ads: [{ads: {
-                ad_id: mongoose.Schema.Types.ObjectId,
-                state: Number
-            }}]
+    model: String,
+    user_id: mongoose.Schema.Types.ObjectId,
+    ads: [{
+            ad_id: mongoose.Schema.Types.ObjectId,
+            state: String
+        }]
 });
 
 module.exports = {

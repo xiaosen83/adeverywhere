@@ -1,1 +1,1 @@
-# adeverywhere
+DEBUG=express* nodemon 

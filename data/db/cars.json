@@ -1,0 +1,1 @@
+{ "_id" : { "$oid" : "57eb5d62a2a93cce350d7f63" }, "id" : "沪K5235", "mode_id" : { "$oid" : "57eb5d62a2a93cce350d7f61" }, "ads_ids" : [ { "ads_id" : { "$oid" : "57eb5d62a2a93cce350d7f62" }, "state" : "pending", "position" : "left" } ] }

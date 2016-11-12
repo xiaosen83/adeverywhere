@@ -9,7 +9,14 @@ sudo docker run \
     -v "$(pwd)/data":/data \
     --link mongodb:mongo \
     -p 8300:3000 \
+    --name nodejs \
     -d cwang/node-ad
 mongoexport -d cwang -c users -o users.json
 mongoexport --db <database-name> --collection <collection-name> --out output.json
 mongoimport --db <database-name> --collection <collection-name> --file input.json
+
+sudo docker cp docker-nginx:/etc/nginx/conf.d/default.conf default.conf
+
+sudo docker run -v "$(pwd)/data/db":/data/db --name mongodb -d mongo mongod 
+
+sudo docker run --name nginx -v "$(pwd)/nginx/default.conf":/etc/nginx/conf.d/default.conf -p 8080:80 -p 8443:443 --link nodejs:nodejs  -d nginx

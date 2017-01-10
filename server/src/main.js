@@ -10,6 +10,9 @@ import Home from './components/Home'
 import Users from './components/Users'
 import Ads from './components/Ads'
 import Cars from './components/Cars'
+import EditCar from './components/EditCar'
+import EditUser from './components/EditUser'
+import EditAd from './components/EditAd'
 import 'bootstrap/dist/css/bootstrap.css'
 
 Vue.use(VueRouter)
@@ -35,6 +38,23 @@ const routes = [
   {
     path: '/cars',
     component: Cars
+  },
+  {
+    path: '/editAd',
+    component: EditAd
+  },
+  {
+    path: '/editAd/:id',
+    name: 'editAd',
+    component: EditAd
+  },
+  {
+    path: '/editCar',
+    component: EditCar
+  },
+  {
+    path: '/editUser',
+    component: EditUser
   }
 ]
 

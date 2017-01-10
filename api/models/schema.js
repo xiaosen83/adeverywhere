@@ -4,8 +4,7 @@ var mongoose = require('mongoose');
 var AdSchema = new mongoose.Schema({
     company: String,
     car_type: Number,
-    car_total: Number,
-    car_current: Number,
+    car_total: Number
     start_date: {type: Date,default: Date.now},
     end_date: {type: Date, default: Date.now},
     logo: String,
@@ -16,6 +15,8 @@ var UserSchema = new mongoose.Schema({
     username: String,
     passwd: String,
     basic_info: {
+        name: String,
+        sex: Number,
         city: String,
         address: String,
         phone: String,
@@ -31,10 +32,10 @@ var UserSchema = new mongoose.Schema({
 var CarSchema = new mongoose.Schema({
     plate_number: String,
     model: String,
-    user_id: mongoose.Schema.Types.ObjectId,
     ads: [{
             ad_id: mongoose.Schema.Types.ObjectId,
-            state: String
+            state: Number,
+            position: Number
         }]
 });
 

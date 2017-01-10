@@ -3,7 +3,13 @@
     <div class='loading' v-if='loading'>
       Ads Loading...
     </div>
-
+    <div>
+      <router-link
+        :to="{ path: '/editAd'}"
+        class="bt btn-primary">
+        Create AD
+      </router-link>    
+    </div>
     <div v-if='ads_list'>
       <table class='table table-striped'>
         <thead>
@@ -19,7 +25,13 @@
             <th scope="row">{{ key }}</th>
             <td>{{ ad.company }}</td>
             <td>{{ ad.car_total }}</td>
-            <td><span class='glyphicon glyphicon-edit'></span> <span class='glyphicon glyphicon-remove-circle'></span></td>
+            <td>
+              <router-link
+                :to="{ name: 'editAd', params: { id: ad._id }}"
+                class="glyphicon glyphicon-edit">
+              </router-link>
+              <span class='glyphicon glyphicon-remove-circle' @click='removeAd(ad._id)'></span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -57,6 +69,9 @@ export default{
       }, (response) => {
         this.error = true
       })
+    },
+    removeAd (id) {
+      console.log('remove:' + id)
     }
   }
 }

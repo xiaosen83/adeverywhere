@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
@@ -108,7 +109,7 @@ router.post('/ads', cpUpload, function(req, res) {
     }  
     console.log(req.body);
     //res.status(200).end()
-    
+
     schema.Ads.create(req.body, function(err, post){
         if(err) res.json(err);
         //res.json(post);
@@ -132,7 +133,7 @@ router.put('/ads/:id', upload.any(), function(req, res, next){
     console.log('body:'+JSON.stringify(req.body));
 
     var update_logo = -1, update_model = -1;
-    if(req.files.length >0){
+    if(req.files && req.files.length >0){
         if(req.files[0].fieldname == 'model')
             update_model = 0;
         else
@@ -164,11 +165,21 @@ router.put('/ads/:id', upload.any(), function(req, res, next){
 // DELETE id=xxx with content
 router.delete('/ads/:id', function(req, res, next){
     console.log('delete ad with id:'+JSON.stringify(req.params.id));
-    schema.Ads.remove({'_id': req.params.id}, function(err, post){
+    schema.Ads.findById(req.params.id, function(err, ads){
         if(err) return next(err);
-        res.status(204).end();
-    });
-    
+        console.log('delete AD:' + ads)
+        schema.Ads.remove({'_id': req.params.id}, function(err, post){
+            if(err) return next(err);
+            // delele images for logo and model
+            if (ads.logo != undefined && fs.existsSync('public/images/logos/' + ads.logo)) {
+                fs.unlinkSync('public/images/logos/' + ads.logo)                
+            }
+            if (ads.model != undefined && fs.existsSync('public/images/models/' + ads.model)) {
+                fs.unlinkSync('public/images/models/' + ads.model)                
+            }
+            res.status(204).end();
+        });        
+    });     
 });
 
 module.exports = router;

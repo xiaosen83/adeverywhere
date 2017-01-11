@@ -72,6 +72,18 @@ export default{
     },
     removeAd (id) {
       console.log('remove:' + id)
+      this.$http.delete('/api/ads/' + id).then((response) => {
+        console.log('Ad Deleted!')
+        var i = 0
+        for (i = 0; i < this.ads_list.length; i++) {
+          if (this.ads_list[i]._id === id) {
+            this.ads_list.splice(i, 1)
+            break
+          }
+        }
+      }, (response) => {
+        console.log('AD Delete failed!')
+      })
     }
   }
 }

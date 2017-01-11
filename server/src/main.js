@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
+import VeeValidate from 'vee-validate'
 import store from './store'
 
 import App from './App'
@@ -15,6 +16,7 @@ import EditUser from './components/EditUser'
 import EditAd from './components/EditAd'
 import 'bootstrap/dist/css/bootstrap.css'
 
+Vue.use(VeeValidate)
 Vue.use(VueRouter)
 Vue.use(VueResource)
 

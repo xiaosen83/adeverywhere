@@ -14,11 +14,16 @@ var app = express();
 
 //mongo db connect
 var mongoose = require('mongoose');
+var monServer = 'mongo:27017'
+console.log('Debug:' + process.env.DEBUG)
+if (process.env.DEBUG === 'express*') {
+  monServer = 'localhost:8100'
+}
 mongoose.Promise = global.Promise;
 //mongoose.connect('mongodb://localhost/cwang')
-mongoose.connect('mongodb://mongo:27017/cwang')
+mongoose.connect('mongodb://' + monServer + '/cwang')
     .then(() => console.log('Mongo DB connection succesful'))
-    .catch((err) => console.err(err));
+    .catch((err) => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

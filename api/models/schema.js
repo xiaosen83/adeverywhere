@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var AdSchema = new mongoose.Schema({
     company: String,
     car_type: Number,
-    car_total: Number
+    car_total: Number,
     start_date: {type: Date,default: Date.now},
     end_date: {type: Date, default: Date.now},
     logo: String,

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # start MongoDB image
-sudo docker run -v "$(pwd)/db/data":/data --name ad_db -d mongo mongod --smallfiles 
+sudo docker run -v "$(pwd)/db/data":/data --name ad_db -p 8100:27017 -d mongo mongod --smallfiles 
 
 #initial mongodb with test data
 sudo docker exec -it ad_db /data/initdb.sh

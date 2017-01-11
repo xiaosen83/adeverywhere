@@ -92,19 +92,23 @@ router.get('/ads', function(req, res, next) {
 }
 */
 router.post('/ads', cpUpload, function(req, res) {
+    console.log('create AD...')
     if(req.files.model != undefined){
+        console.log('upload model:' + req.files.model[0].destination+req.files.model[0].filename)
         fs.renameSync(req.files.model[0].destination+req.files.model[0].filename, 
             './public/images/models/'+req.files.model[0].filename);
         req.body.model = req.files.model[0].filename;
     }
 
     if(req.files.logo != undefined){
+        console.log('upload logo:' + req.files.logo[0].destination+req.files.logo[0].filename)
         fs.renameSync(req.files.logo[0].destination+req.files.logo[0].filename, 
             './public/images/logos/'+req.files.logo[0].filename);
         req.body.logo = req.files.logo[0].filename;
     }  
     console.log(req.body);
-
+    //res.status(200).end()
+    
     schema.Ads.create(req.body, function(err, post){
         if(err) res.json(err);
         //res.json(post);

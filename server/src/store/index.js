@@ -6,13 +6,19 @@ import actions from './actions'
 Vue.use(Vuex)
 
 const state = {
+  token: null,
   totalTime: 0,
   list: []
+}
+
+const getters = {
+  token: state => state.token
 }
 
 export default new Vuex.Store({
   state,
   mutations,
-  actions
+  actions,
+  getters
 })
 

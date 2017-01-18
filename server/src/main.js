@@ -14,6 +14,8 @@ import Cars from './components/Cars'
 import EditCar from './components/EditCar'
 import EditUser from './components/EditUser'
 import EditAd from './components/EditAd'
+import Login from './components/Login'
+import Register from './components/Register'
 import 'bootstrap/dist/css/bootstrap.css'
 
 Vue.use(VeeValidate)
@@ -57,6 +59,14 @@ const routes = [
   {
     path: '/editUser',
     component: EditUser
+  },
+  {
+    path: '/login',
+    component: Login
+  },
+  {
+    path: '/register',
+    component: Register
   }
 ]
 

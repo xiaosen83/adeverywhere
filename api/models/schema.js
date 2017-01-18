@@ -1,5 +1,7 @@
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
+var crypto = require('crypto')
+var jwt = require('jsonwebtoken')
 
 var AdSchema = new mongoose.Schema({
     company: String,
@@ -14,6 +16,8 @@ var UserSchema = new mongoose.Schema({
     role: String,
     username: String,
     passwd: String,
+    hash: String,
+    salt: String,
     basic_info: {
         name: String,
         sex: Number,
@@ -39,6 +43,29 @@ var CarSchema = new mongoose.Schema({
         }]
 });
 
+////////////// authentication methods //////////////////
+UserSchema.methods.setPassword = function (password) {
+    this.salt = crypto.randomBytes(16).toString('hex')
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex')
+}
+
+UserSchema.methods.validPassword = function (password) {
+    var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex')
+    console.log('computed hash:' + hash)
+    console.log('password hash:' + this.hash)
+    return this.hash === hash
+}
+
+UserSchema.methods.generateJwt = function () {
+    var expiry = new Date()
+    expiry.setDate(expiry.getDate() + 7)
+    return jwt.sign({
+        _id: this._id,
+        name: this.username,
+        exp: parseInt(expiry.getTime() / 1000)
+    }, "SECRET_CWANG")
+}
+//////////////////////end ////////////////////////////////
 module.exports = {
         Ads: mongoose.model('Ads',AdSchema),
         Users: mongoose.model("Users", UserSchema),

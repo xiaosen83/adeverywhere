@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default{
   name: 'ads',
   data () {
@@ -53,8 +55,29 @@ export default{
       error: false
     }
   },
+  computed: {
+    isLoggedIn () {
+      if (this.token) {
+        // var token = this.$store.state.token
+        // TODO: check expire date
+        return true
+      } else {
+        return false
+      }
+    },
+    ...mapGetters([
+      'token'
+    ])
+  },
   created () {
-    this.fetchData()
+    if (!this.token) {
+      console.log('Token empty, redirect to login page...')
+      this.$router.push('login')
+      return
+    }
+    this.$nextTick(function () {
+      this.fetchData()
+    })
   },
   watch: {
     '$route': 'fetchData'
@@ -63,7 +86,10 @@ export default{
     fetchData () {
       this.ads_list = null
       this.loading = true
-      this.$http.get('/api/ads').then((response) => {
+      // set header globaly
+      // Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
+      var headers = {headers: {'Authorization': 'Bearer ' + this.token}}
+      this.$http.get('/api/ads', headers).then((response) => {
         this.$set(this, 'ads_list', response.body)
         this.loading = false
       }, (response) => {

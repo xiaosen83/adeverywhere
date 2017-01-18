@@ -8,15 +8,23 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var schema = require('../../models/schema.js');
 
+var jwt = require('express-jwt');
+var auth = jwt({
+  secret: 'SECRET_CWANG',
+  userProperty: 'payload'
+});
+
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); 
 
 var driver = require('./driver');
 var client = require('./client');
 var vendor = require('./vendor');
+var authentication = require('./authentication');
 router.use('/driver', driver);
 router.use('/client', client);
 router.use('/vendor', vendor);
+router.use('/auth', authentication);
 
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
@@ -71,12 +79,19 @@ router.get('/ads', function(req, res, next){
 });
 
 /* GET ad listing. */
-router.get('/ads', function(req, res, next) {
-    console.log("ads without query")
-    schema.Ads.find(function(err, ads){
-        if(err) return next(err);
-        res.json(ads);
-    });
+router.get('/ads', auth, function(req, res, next) {
+    console.log("ads without query:" + req.payload)
+    if (!req.payload || !req.payload._id) {
+        res.status(401).json({
+            "message": "Unauthorized access!"
+        })
+    } else {
+        console.log('payload id:' + req.payload._id)
+        schema.Ads.find(function(err, ads){
+            if(err) return next(err);
+            res.json(ads);
+        });        
+    }
 });
 
 // create AD document

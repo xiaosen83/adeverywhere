@@ -42,7 +42,14 @@ router.post('/register', function(req, res){
   var user = new schema.Users
   user.username = req.body.username
   user.setPassword(req.body.password)
-  user.role = 'admin'
+  if (user.username !== 'admin' && user.username !== 'cwang')
+    user.role = 'client'
+  else
+    user.role = 'admin'
+  var basic_info = {}
+  basic_info.email = 'cwang@sonicwall.com'
+  basic_info.phone = '139999999'
+  user.basic_info = basic_info
   user.save(function(err){
     var  token = user.generateJwt()
     console.log('token:' + token)
@@ -51,5 +58,13 @@ router.post('/register', function(req, res){
   })
 });
 
+router.post('/logout', function(req, res){
+  console.log('logout..., playload:' + JSON.stringify(req.payload))
+  var item = { 'name': req.payload.name, 'exp': req.payload.exp }
+  schema.BlackList.create(item, function(err, post){
+      if(err) res.json(err);
+      res.status(204).end();
+  });
+})
 
 module.exports = router;

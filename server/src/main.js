@@ -57,7 +57,8 @@ const routes = [
     component: EditCar
   },
   {
-    path: '/editUser',
+    path: '/editUser/:id',
+    name: 'editUser',
     component: EditUser
   },
   {

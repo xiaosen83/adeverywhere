@@ -2,17 +2,21 @@
   <div id="app">
     <div id='navbar' class='center-block'>
       <nav class='navbar navbar-default'>
-        <div class='navbar-header'>
-          <ul class='nav navbar-nav'>
-            <li><router-link to="/home">Home</router-link></li>
-            <li><router-link to="/ads">Advertise</router-link></li>
-            <li><router-link to="/users">Users</router-link></li>
-            <li><router-link to="/cars">Cars</router-link></li>
-          </ul>        
+        <div class="row">
+          <div class='navbar-header col-md-10'>
+            <ul class='nav navbar-nav'>
+              <li><router-link to="/home">Home</router-link></li>
+              <li><router-link to="/ads">Advertise</router-link></li>
+              <li><router-link to="/users">Users</router-link></li>
+              <li><router-link to="/cars">Cars</router-link></li>
+            </ul>      
+          </div>
+          <div class='col-md-2'>
+            <userinfo></userinfo>
+          </div>  
         </div>
       </nav>
     </div>
-
     <div class="container">
       <router-view></router-view>
     </div>
@@ -20,8 +24,12 @@
 </template>
 
 <script>
+import UserInfo from './components/UserInfo.vue'
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    'userinfo': UserInfo
+  }
 }
 </script>
 

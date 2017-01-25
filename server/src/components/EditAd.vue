@@ -110,13 +110,15 @@ export default{
         this.loading = false
         return
       }
-      this.$http.get('/api/ads/' + this.$route.params.id).then((response) => {
+      var options = {headers: {'Authorization': 'Bearer ' + this.$store.state.token}}
+      this.$http.get('/api/ads/' + this.$route.params.id, options).then((response) => {
         if (response.body != null) {
           this.$set(this, 'ad', response.body)
         }
         this.loading = false
       }, (response) => {
         this.error = true
+        this.$store.dispatch('saveToken', null)
       })
     },
     onFileChange: function (e) {
@@ -149,9 +151,11 @@ export default{
       if (document.getElementById('model').files.length > 0) {
         formData.append('model', document.getElementById('model').files[0])
       }
+      var options = {headers: {'Authorization': 'Bearer ' + this.$store.state.token}}
+      // console.log(JSON.stringify(options))
       if (!this.edit) {
         // POST schema
-        this.$http.post('/api/ads', formData).then((response) => {
+        this.$http.post('/api/ads', formData, options).then((response) => {
           console.log('AD create succeed!')
           this.$router.go(-1)
         }, (response) => {
@@ -163,7 +167,7 @@ export default{
         }})
       } else {
         // PUT request
-        this.$http.put('/api/ads/' + this.$route.params.id, formData).then((response) => {
+        this.$http.put('/api/ads/' + this.$route.params.id, formData, options).then((response) => {
           console.log('AD updated!')
           this.$router.go(-1)
         }, (response) => {

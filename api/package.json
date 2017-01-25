@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "express-jwt": "^5.1.0",
+    "express-unless": "^0.3.0",
     "jsonwebtoken": "^7.2.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0"

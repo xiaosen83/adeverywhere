@@ -26,9 +26,13 @@ Docker container name: ad_db, ad_api, ad_server, ad_nginx
     Then access Restful API with: http://localhost:8080/api/ads
 
 # Tips
-## DEBUG=express* nodemon
+## cd api && DEBUG=express* nodemon   ->3000
+## cd server && PORT=4000 npm run dev ->4000
+## sudo /usr/local/nginx/sbin/nginx -c "$(pwd)/nginx/dev.conf"
+
 ##Docker port map:
   Mongodb : 8100 --> 27017
   NodeJS(API): 8300 --> 3000
+  Server: 8400 --> 8080
 # TODOS
 

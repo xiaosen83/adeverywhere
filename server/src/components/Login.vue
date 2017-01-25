@@ -17,8 +17,8 @@
     <div>
       <router-link to="/register">Not Join yet? Click to register!</router-link>
     </div>
-    <div v-if='error'>
-      <span>{{ errmsg }}</span>
+    <div v-if='message.length>0'>
+      <span>{{ message }}</span>
     </div>
   </div>
 </template>
@@ -30,17 +30,14 @@ export default {
     return {
       username: '',
       password: '',
-      error: false,
-      errmsg: ''
+      message: ''
     }
   },
   methods: {
     onSubmit: function () {
-      this.error = false
       if (this.username === '' || this.password === '') {
         // TODO: using validater midderware
-        this.error = true
-        this.errmsg = 'username and password missing'
+        this.message = 'username and password missing'
         return
       }
       var creds = { username: this.username, password: this.password }
@@ -50,8 +47,7 @@ export default {
         this.$router.go(-1)
       }, (response) => {
         console.log('Error during login...')
-        this.errmsg = response.body
-        this.error = true
+        this.message = response.body
       })
     }
   }

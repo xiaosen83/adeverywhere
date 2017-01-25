@@ -43,6 +43,11 @@ var CarSchema = new mongoose.Schema({
         }]
 });
 
+var BlackListSchema = new mongoose.Schema({
+    name: String,
+    exp: Number
+})
+
 ////////////// authentication methods //////////////////
 UserSchema.methods.setPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString('hex')
@@ -58,18 +63,22 @@ UserSchema.methods.validPassword = function (password) {
 
 UserSchema.methods.generateJwt = function () {
     var expiry = new Date()
-    expiry.setDate(expiry.getDate() + 7)
+    var expInMinutes = 60*60 //5minutes
+    expiry.setTime(expiry.getTime() + expInMinutes*1000)
     return jwt.sign({
         _id: this._id,
         name: this.username,
+        role: this.role,
         exp: parseInt(expiry.getTime() / 1000)
     }, "SECRET_CWANG")
 }
+
 //////////////////////end ////////////////////////////////
 module.exports = {
         Ads: mongoose.model('Ads',AdSchema),
         Users: mongoose.model("Users", UserSchema),
-        Cars: mongoose.model('Cars', CarSchema)
+        Cars: mongoose.model('Cars', CarSchema),
+        BlackList: mongoose.model('BlackList', BlackListSchema)
 }
 
 

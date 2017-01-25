@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var express = require('express');
+var unless = require('express-unless')
 var router = express.Router();
 var multer = require('multer');
 var bodyParser = require('body-parser');
@@ -8,11 +9,27 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var schema = require('../../models/schema.js');
 
+var isLogoutCallback = function (req, payload, done) {
+  schema.BlackList.findOne({ 'name': payload.name, 'exp': payload.exp }, function(err, blackuser){
+        if(err) return done(err, false);
+        console.log('revoked name:' + JSON.stringify(blackuser) + ', payload:' + JSON.stringify(payload))        
+        if (blackuser === null) {
+            done(null, false)
+        } else {
+            done(null, true)           
+        }
+    })
+}
+
 var jwt = require('express-jwt');
 var auth = jwt({
   secret: 'SECRET_CWANG',
-  userProperty: 'payload'
+  userProperty: 'payload',
+  isRevoked: isLogoutCallback
 });
+// route /auth/xxxx are not protected, other router are protected, 
+// /auth/logout also protected, as it need to decode the token and get the token need to logout
+router.use(auth.unless({ path: /auth\/(?!logout)/i }))
 
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); 
@@ -20,12 +37,15 @@ router.use(bodyParser.urlencoded({ extended: true }));
 var driver = require('./driver');
 var client = require('./client');
 var vendor = require('./vendor');
+var users = require('./users');
 var authentication = require('./authentication');
 router.use('/driver', driver);
 router.use('/client', client);
 router.use('/vendor', vendor);
 router.use('/auth', authentication);
+router.use('/users', users);
 
+//////////////////following are protected API, which need authed//////////////////////////////
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, './uploads/')
@@ -79,7 +99,7 @@ router.get('/ads', function(req, res, next){
 });
 
 /* GET ad listing. */
-router.get('/ads', auth, function(req, res, next) {
+router.get('/ads', function(req, res, next) {
     console.log("ads without query:" + req.payload)
     if (!req.payload || !req.payload._id) {
         res.status(401).json({

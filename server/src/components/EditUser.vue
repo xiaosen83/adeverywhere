@@ -115,7 +115,7 @@ export default{
           id_image: ''
         }
       },
-      cars: [],
+      cars_list: [],
       loading: true,
       message: ''
     }
@@ -180,6 +180,7 @@ export default{
         }
       }, (response) => {
         this.message = 'Unable to get user\'s car, not login?'
+        console.log(response.body)
       })
     },
     onSubmit: function () {

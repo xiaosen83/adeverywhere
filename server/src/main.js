@@ -57,6 +57,11 @@ const routes = [
     component: EditCar
   },
   {
+    path: '/editCar/:id',
+    name: 'editCar',
+    component: EditCar
+  },
+  {
     path: '/editUser/:id',
     name: 'editUser',
     component: EditUser

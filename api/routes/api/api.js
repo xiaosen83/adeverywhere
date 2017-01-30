@@ -38,12 +38,14 @@ var driver = require('./driver');
 var client = require('./client');
 var vendor = require('./vendor');
 var users = require('./users');
+var cars = require('./cars');
 var authentication = require('./authentication');
 router.use('/driver', driver);
 router.use('/client', client);
 router.use('/vendor', vendor);
 router.use('/auth', authentication);
 router.use('/users', users);
+router.use('/cars', cars);
 
 //////////////////following are protected API, which need authed//////////////////////////////
 var storage = multer.diskStorage({ //multers disk storage settings

@@ -27,14 +27,14 @@ var cpUpload = upload.fields([{ name: 'head_icon', maxCount: 1 }, { name: 'logo'
 
 /* GET users listing. */
 router.get('/', auth, function(req, res, next) {
-    console.log("users without query:" + req.payload)
+    console.log("cars without query:" + req.payload)
     if (!req.payload || !req.payload._id) {
         res.status(401).json({
             "message": "Unauthorized access!"
         })
     } else {
         console.log('payload id:' + req.payload._id)
-        schema.Users.find(function(err, users){
+        schema.Cars.find(function(err, users){
             if(err) return next(err);
             res.json(users);
         });        
@@ -43,7 +43,7 @@ router.get('/', auth, function(req, res, next) {
 
 // GET /user/:id
 router.get('/:id', function(req, res, next) {
-    schema.Users.findById(req.params.id, function(err, user){
+    schema.Cars.findById(req.params.id, function(err, user){
         if(err) return next(err);
         res.json(user);
     });

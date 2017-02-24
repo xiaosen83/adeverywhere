@@ -29,7 +29,13 @@ var auth = jwt({
 });
 // route /auth/xxxx are not protected, other router are protected, 
 // /auth/logout also protected, as it need to decode the token and get the token need to logout
-router.use(auth.unless({ path: /auth\/(?!logout)/i }))
+if (process.env.AUTH !== 'false') {
+    // default true, false for development
+    console.log("Auth enabled!")
+    router.use(auth.unless({ path: /auth\/(?!logout)/i }))    
+} else {
+    console.log('Auth disabled')
+}
 
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); 

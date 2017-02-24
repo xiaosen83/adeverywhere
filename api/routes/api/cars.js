@@ -25,8 +25,14 @@ var upload = multer({ //multer settings
             });//.single('file');
 var cpUpload = upload.fields([{ name: 'head_icon', maxCount: 1 }, { name: 'logo', maxCount: 1 }])
 
-/* GET users listing. */
-router.get('/', auth, function(req, res, next) {
+/* GET cars listing. */
+router.get('/', function(req, res, next) {
+    //cwang: testing purpose without auth
+    schema.Cars.find(function(err, cars){
+        if(err) return next(err);
+        res.json(cars);
+    })
+    return
     console.log("cars without query:" + req.payload)
     if (!req.payload || !req.payload._id) {
         res.status(401).json({
@@ -41,7 +47,7 @@ router.get('/', auth, function(req, res, next) {
     }
 });
 
-// GET /user/:id
+// GET /car/:id
 router.get('/:id', function(req, res, next) {
     schema.Cars.findById(req.params.id, function(err, user){
         if(err) return next(err);
@@ -49,87 +55,53 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
-// DELETE id=xxx with content
+// DELETE /car/:id  ----id=xxx with content
 router.delete('/:id', function(req, res, next){
-    console.log('delete user with id:'+JSON.stringify(req.params.id));
-    schema.Users.findById(req.params.id, function(err, user){
+    console.log('delete car with id:'+JSON.stringify(req.params.id));
+    schema.Cars.findById(req.params.id, function(err, user){
         if(err) return next(err);
-        schema.Users.remove({'_id': req.params.id}, function(err, post){
+        schema.Cars.remove({'_id': req.params.id}, function(err, post){
             if(err) return next(err);
-            // TODO: delele images for logo and model
-            if (user.head_icon != undefined && fs.existsSync('public/images/heads/' + user.head_icon)) {
-                fs.unlinkSync('public/images/heads/' + user.head_icon)                
-            }
-            res.status(204).end();
+            // remove from User table
+            schema.Users.update({}, {$push: {car_ids: req.params.id}}, function(err, post){
+                if(err) return next(err)
+                res.status(204).end();
+            });
         });        
     });     
 });
 
-router.put('/:id', upload.any(), function(req, res, next){
+//POST /cars
+// body:{"plate_number" : "沪K5235", "model" : "Audi Q5", "user_id": "xxxxxxxxxxxxxxxxxxx"}
+router.post('/', function(req, res){
+  console.log('create car...')
+  console.log(req.body)
+  var car = new schema.Cars
+  console.log("new car id:" + car._id)
+  car.plate_number = req.body.plate_number
+  car.model = req.body.model
+  car.save(function(err){
+    if(err) return next(err)
+    // attach car_id to user
+    schema.Users.findOneAndUpdate({_id: req.body.user_id}, {$push: {car_ids: car._id}}, function(err, post){
+        if(err) return next(err)
+        res.status(204).end();
+    });
+  })
+});
+
+// PUT /cars/:id    -- create or update
+// body:{"plate_number" : "沪K5235", "model" : "Audi Q5"}
+router.put('/:id', function(req, res, next){
     console.log('update user id:'+JSON.stringify(req.params));
     console.log('req.files:'+JSON.stringify(req.files));
     console.log(req.body);
 
-    var file_head = -1,
-        file_id = -1;
-    if(req.files && req.files.length >0){
-        if(req.files[0].fieldname == 'head_icon') {
-            file_head = 0;          
-        } else if (req.files[0].fieldname == 'id_image') {
-            file_id = 0;
-        }
-        if (req.files.length > 1) {
-            if(req.files[1].fieldname == 'head_icon') {
-                file_head = 1
-            } else {
-                file_id = 1
-            }
-        }
-    }
-    if (req.body.basic_info === undefined) {
-        req.body.basic_info = {}
-    } else {
-        req.body.basic_info = JSON.parse(req.body.basic_info)
-    }
-    if (req.body.cert_info === undefined) {
-        req.body.cert_info = {}
-    } else {
-        req.body.cert_info = JSON.parse(req.body.cert_info)
-    }
-    if (req.body.car_ids === undefined) {
-        req.body.car_ids = []
-    } else {
-        // req.body.car_ids = req.body.car_ids
-    }
-        
-    if(file_head != -1){
-        fs.renameSync(req.files[file_head].destination+req.files[file_head].filename, 
-            './public/images/heads/'+req.files[file_head].filename);
-        req.body.basic_info.head_icon = req.files[file_head].filename;
-    }
-    if(file_id != -1){
-        fs.renameSync(req.files[file_id].destination+req.files[file_id].filename, 
-            './public/images/ids/'+req.files[file_id].filename);
-        req.body.cert_info.id_image = req.files[file_id].filename;
-    }
-    console.log(req.body.basic_info);
+
     schema.Users.findByIdAndUpdate(req.params.id, req.body, function(err, post){
         if(err) return next(err);
         res.status(204).end(); 
     });   
-});
-
-// GET /user/:id
-router.get('/:id/cars', function(req, res, next) {
-    schema.Users.findById(req.params.id, function(err, user){
-        if(err) return next(err);
-        if (user.car_ids && user.car_ids.length > 0) {
-            schema.Cars.find({_id: { $in: user.car_ids }}, function(err1, cars){
-                if(err1) return next(err1);
-                res.json(cars)
-            })
-        }
-    })
 });
 
 module.exports = router;

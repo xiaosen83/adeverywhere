@@ -1,5 +1,12 @@
 <template>
   <div id='cars'>
+    <div class='row'>
+      <router-link
+        :to="{ path: '/editCar', params: { action: 'new' }}"
+        class="bt btn-primary">
+        Create Car
+      </router-link> 
+    </div>
     <div>
       <table class='table table-striped'>
         <thead>
@@ -19,7 +26,7 @@
             <td>{{ car.ads.length>0? car.ads.length:0 }}</td>
             <td>
               <router-link
-                :to="{ name: 'editCar', params: { id: car._id }}"
+                :to="{ name: 'editCar', params: { id: car._id, action: 'edit' }}"
                 class="glyphicon glyphicon-edit">
               </router-link>
               <span class='glyphicon glyphicon-remove-circle' @click='removeCar(car._id)'></span>
@@ -51,11 +58,13 @@ export default{
     ])
   },
   created: function () {
+    /*
     if (!this.token) {
       console.log('Token empty, redirect to login page...')
       this.$router.push('login')
       return
     }
+    */
     this.$nextTick(function () {
       this.loadCars()
     })
@@ -66,8 +75,8 @@ export default{
       this.loading = true
       // set header globaly
       // Vue.http.headers.common['Authorization'] = 'Basic YXBpOnBhc3N3b3Jk';
-      var headers = {headers: {'Authorization': 'Bearer ' + this.token}}
-      this.$http.get('/api/cars', headers).then((response) => {
+      var options = {headers: {'Authorization': 'Bearer ' + this.token}}
+      this.$http.get('/api/cars', options).then((response) => {
         this.$set(this, 'cars_list', response.body)
         this.loading = false
       }, (response) => {

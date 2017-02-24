@@ -36,3 +36,8 @@ Docker container name: ad_db, ad_api, ad_server, ad_nginx
   Server: 8400 --> 8080
 # TODOS
 
+#######################
+#1. PORT=4000 npm run dev
+#2. DEBUG=express* nodemon
+#3. sudo /usr/local/nginx/sbin/nginx -c "$(pwd)/nginx/dev.conf"
+#######################

@@ -76,14 +76,21 @@
             <td>{{ car.ads.length>0? car.ads.length:0 }}</td>
             <td>
               <router-link
-                :to="{ name: 'editCar', params: { id: car._id }}"
+                :to="{ name: 'editCar', params: { id: car._id, action: 'edit', userid: user.id }}"
                 class="glyphicon glyphicon-edit">
               </router-link>
-              <span class='glyphicon glyphicon-remove-circle' @click='removeUser(car._id)'></span>
+              <span class='glyphicon glyphicon-remove-circle'></span>
             </td>
           </tr>
         </tbody>
       </table>
+      <div class='row'>
+        <router-link
+          :to="{ name: 'editCar', params: { action: 'new', userid: user.id }}"
+          class="bt btn-primary">
+          Create Car
+        </router-link> 
+      </div>      
     </div>     
     <div v-if='message.length>0'>
     Error: {{ message }}
@@ -99,6 +106,7 @@ export default{
   data () {
     return {
       user: {
+        id: '',
         username: '',
         role: 'admin',
         basic_info: {
@@ -141,12 +149,15 @@ export default{
         this.message = 'No User ID supplyed'
         return
       }
+      this.user.id = this.$route.params.id
+      /*
       if (!this.token) {
         // redirect to login
         console.log('redirect to login...')
         this.$router.push('/login')
         return
       }
+      */
       var options = {headers: {'Authorization': 'Bearer ' + this.token}}
       this.$http.get('/api/users/' + this.$route.params.id, options).then((response) => {
         if (response.body != null) {
@@ -209,7 +220,7 @@ export default{
       })
     },
     onCancel: function () {
-      return
+      this.$router.go(-1)
     }
   }
 }

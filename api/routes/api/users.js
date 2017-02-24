@@ -9,6 +9,7 @@ var auth = jwt({
   secret: 'SECRET_CWANG',
   userProperty: 'payload'
 });
+var AUTH = true
 
 //////////////////following are protected API, which need authed//////////////////////////////
 var storage = multer.diskStorage({ //multers disk storage settings
@@ -26,9 +27,9 @@ var upload = multer({ //multer settings
 var cpUpload = upload.fields([{ name: 'head_icon', maxCount: 1 }, { name: 'logo', maxCount: 1 }])
 
 /* GET users listing. */
-router.get('/', auth, function(req, res, next) {
+router.get('/', function(req, res, next) {
     console.log("users without query:" + req.payload)
-    if (!req.payload || !req.payload._id) {
+    if (AUTH && (!req.payload || !req.payload._id)) {
         res.status(401).json({
             "message": "Unauthorized access!"
         })
@@ -44,7 +45,10 @@ router.get('/', auth, function(req, res, next) {
 // GET /user/:id
 router.get('/:id', function(req, res, next) {
     schema.Users.findById(req.params.id, function(err, user){
-        if(err) return next(err);
+        if(err) {
+            console.log("Error: find user failed with id:" + req.params.id)
+            return next(err);
+        }
         res.json(user);
     });
 });
@@ -122,12 +126,18 @@ router.put('/:id', upload.any(), function(req, res, next){
 // GET /user/:id
 router.get('/:id/cars', function(req, res, next) {
     schema.Users.findById(req.params.id, function(err, user){
-        if(err) return next(err);
+        if(err) {
+            console.log("Error: find user failed with id:" + req.params.id)
+            return next(err);
+        }
+        console.log("Found user (car):" + JSON.stringify(user))
         if (user.car_ids && user.car_ids.length > 0) {
             schema.Cars.find({_id: { $in: user.car_ids }}, function(err1, cars){
                 if(err1) return next(err1);
                 res.json(cars)
             })
+        } else {
+            res.status(204).end();
         }
     })
 });

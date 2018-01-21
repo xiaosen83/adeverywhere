@@ -13,17 +13,30 @@ var api = require('./routes/api/api');
 var app = express();
 
 //mongo db connect
+var CONTAINER_DB='ad_db'
+var DBPORT_O=8100
+var DBPORT_I=27017
 var mongoose = require('mongoose');
-var monServer = 'mongo:27017'
+var monServer = CONTAINER_DB + ':' + DBPORT_I //'ad_db:27017
 console.log('Debug:' + process.env.DEBUG)
 if (process.env.DEBUG === 'express*') {
-  monServer = 'localhost:8100'
+  monServer = 'localhost:' + DBPORT_O //'localhost:8100'
 }
 mongoose.Promise = global.Promise;
 //mongoose.connect('mongodb://localhost/cwang')
+console.log('mongoDB:' + monServer)
 mongoose.connect('mongodb://' + monServer + '/cwang')
     .then(() => console.log('Mongo DB connection succesful'))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err)
+      monServer = 'localhost:' + DBPORT_O
+      console.log('mongoDB:' + monServer)
+      mongoose.connect('mongodb://' + monServer + '/cwang')
+      .then(() => console.log('Mongo DB connection succesful'))
+      .catch((err1) => {
+        console.log(err1)
+      })
+    });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

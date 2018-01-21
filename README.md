@@ -20,6 +20,9 @@ Docker container name: ad_db, ad_api, ad_server, ad_nginx
 ### NodeJS
     cd ./api && npm install
     sudo docker run -it -v "$(pwd)/api":/usr/src/app --name ad_api -p 8300:3000 -w /usr/src/app -d --link mongodb:mongo node npm start
+### AD-Server
+    cd ./server && npm install
+    docker run -it -v "$(pwd)/server":/usr/src/app --name $CONTAINER_SERVER --network $DOCKER_NET -p $SERVERPORT_O:$SERVERPORT_I -w /usr/src/app -d node npm run dev
 ### Nginx
     sudo docker run --name nginx -v "$(pwd)/nginx/default.conf":/etc/nginx/conf.d/default.conf -p 8080:80 -p 8443:443 --link nodejs:nodejs  -d nginx
 

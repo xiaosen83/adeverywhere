@@ -49,9 +49,14 @@ start(){
 
 	echo "Start Restful API server ..."
 	# start API server (nodejs)
+	#Legacy cross access with '--link' option
 	#sudo docker run -it -v "$(pwd)/api":/usr/src/app --name ad_api -p $APIPORT_O:$APIPORT_I -w /usr/src/app -d --link ad_db:mongo node npm start
-
-	docker run -it -v "$(pwd)/api":/usr/src/app --name $CONTAINER_API --network $DOCKER_NET -p $APIPORT_O:$APIPORT_I -w /usr/src/app -d node npm start	
+	
+	#offical start API command
+	#docker run -it -v "$(pwd)/api":/usr/src/app --name $CONTAINER_API --network $DOCKER_NET -p $APIPORT_O:$APIPORT_I -w /usr/src/app -d node npm start	
+	
+	#Turn off auth with '-e AUTH=false'
+	docker run -it -v "$(pwd)/api":/usr/src/app --name $CONTAINER_API --network $DOCKER_NET -p $APIPORT_O:$APIPORT_I -w /usr/src/app -e AUTH=false -d node npm start
 
 	echo "Start management server ..."
 	# start management server (Vue2)

@@ -3,6 +3,12 @@ node_modules/
 dist/
 npm-debug.log
 test/unit/coverage
-api/uploads
-api/public/images
+
+api/uploads/*
+api/public/images/models/*
+api/public/images/logos/*
+!api/uploads/dummy
+!api/public/images/models/dummy
+!api/public/images/logos/dummy
+
 server/static

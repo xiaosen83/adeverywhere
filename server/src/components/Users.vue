@@ -52,7 +52,7 @@ export default{
     ])
   },
   created: function () {
-    if (!this.token) {
+    if (this.$parent.authNeeded && !this.token) {
       console.log('Token empty, redirect to login page...')
       this.$router.push('login')
       return

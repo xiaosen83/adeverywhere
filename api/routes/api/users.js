@@ -9,7 +9,18 @@ var auth = jwt({
   secret: 'SECRET_CWANG',
   userProperty: 'payload'
 });
-var AUTH = true
+
+// route /auth/xxxx are not protected, other router are protected, 
+// /auth/logout also protected, as it need to decode the token and get the token need to logout
+var authNeeded = true;
+if (process.env.AUTH !== 'false') {
+    // default true, false for development
+    console.log("Auth enabled!")
+    router.use(auth.unless({ path: /auth\/(?!logout)/i }))   
+} else {
+    console.log('Auth disabled')
+    authNeeded = false; 
+}
 
 //////////////////following are protected API, which need authed//////////////////////////////
 var storage = multer.diskStorage({ //multers disk storage settings
@@ -29,7 +40,7 @@ var cpUpload = upload.fields([{ name: 'head_icon', maxCount: 1 }, { name: 'logo'
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     console.log("users without query:" + req.payload)
-    if (AUTH && (!req.payload || !req.payload._id)) {
+    if (authNeeded && (!req.payload || !req.payload._id)) {
         res.status(401).json({
             "message": "Unauthorized access!"
         })

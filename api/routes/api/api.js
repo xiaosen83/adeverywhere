@@ -27,14 +27,17 @@ var auth = jwt({
   userProperty: 'payload',
   isRevoked: isLogoutCallback
 });
+var authNeeded = true;
+
 // route /auth/xxxx are not protected, other router are protected, 
 // /auth/logout also protected, as it need to decode the token and get the token need to logout
 if (process.env.AUTH !== 'false') {
     // default true, false for development
     console.log("Auth enabled!")
-    router.use(auth.unless({ path: /auth\/(?!logout)/i }))    
+    router.use(auth.unless({ path: /auth\/(?!logout)/i }))   
 } else {
     console.log('Auth disabled')
+    authNeeded = false; 
 }
 
 router.use(bodyParser.json()); // support json encoded bodies
@@ -78,8 +81,8 @@ router.get('/ads', function(req, res, next){
         console.log("query count:" + req.query.count || 'null');
         console.log("query pos:" + req.query.pos || 'null');
         var query = schema.Ads.find({});
-        query.limit(req.query.count || 20);
-        query.skip(req.query.pos || 0);
+        query.limit(parseInt(req.query.count) || 20);
+        query.skip(parseInt(req.query.pos) || 0);
         query.exec(function(err, ads){
             if(err) return next(err);
             res.json(ads);
@@ -109,12 +112,11 @@ router.get('/ads', function(req, res, next){
 /* GET ad listing. */
 router.get('/ads', function(req, res, next) {
     console.log("ads without query:" + req.payload)
-    if (!req.payload || !req.payload._id) {
+    if (authNeeded && (!req.payload || !req.payload._id)) {
         res.status(401).json({
             "message": "Unauthorized access!"
         })
     } else {
-        console.log('payload id:' + req.payload._id)
         schema.Ads.find(function(err, ads){
             if(err) return next(err);
             res.json(ads);
@@ -136,6 +138,32 @@ router.get('/ads', function(req, res, next) {
 }
 */
 router.post('/ads', cpUpload, function(req, res) {
+    console.log('create AD...')
+    if(req.files.model != undefined){
+        console.log('upload model:' + req.files.model[0].destination+req.files.model[0].filename)
+        fs.renameSync(req.files.model[0].destination+req.files.model[0].filename, 
+            './public/images/models/'+req.files.model[0].filename);
+        req.body.model = req.files.model[0].filename;
+    }
+
+    if(req.files.logo != undefined){
+        console.log('upload logo:' + req.files.logo[0].destination+req.files.logo[0].filename)
+        fs.renameSync(req.files.logo[0].destination+req.files.logo[0].filename, 
+            './public/images/logos/'+req.files.logo[0].filename);
+        req.body.logo = req.files.logo[0].filename;
+    }  
+    console.log(req.body);
+    //res.status(200).end()
+
+    schema.Ads.create(req.body, function(err, post){
+        if(err) res.json(err);
+        //res.json(post);
+        res.status(204).end();
+    });
+    //res.status(204).end();
+});
+
+router.put('/ads', cpUpload, function(req, res) {
     console.log('create AD...')
     if(req.files.model != undefined){
         console.log('upload model:' + req.files.model[0].destination+req.files.model[0].filename)

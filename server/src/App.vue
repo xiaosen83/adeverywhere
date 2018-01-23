@@ -29,6 +29,11 @@ export default {
   name: 'app',
   components: {
     'userinfo': UserInfo
+  },
+  data () {
+    return {
+      authNeeded: false
+    }
   }
 }
 </script>

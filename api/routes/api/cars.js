@@ -10,6 +10,18 @@ var auth = jwt({
   userProperty: 'payload'
 });
 
+// route /auth/xxxx are not protected, other router are protected, 
+// /auth/logout also protected, as it need to decode the token and get the token need to logout
+var authNeeded = true;
+if (process.env.AUTH !== 'false') {
+    // default true, false for development
+    console.log("Auth enabled!")
+    router.use(auth.unless({ path: /auth\/(?!logout)/i }))   
+} else {
+    console.log('Auth disabled')
+    authNeeded = false; 
+}
+
 //////////////////following are protected API, which need authed//////////////////////////////
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
@@ -28,18 +40,21 @@ var cpUpload = upload.fields([{ name: 'head_icon', maxCount: 1 }, { name: 'logo'
 /* GET cars listing. */
 router.get('/', function(req, res, next) {
     //cwang: testing purpose without auth
+    /*
     schema.Cars.find(function(err, cars){
         if(err) return next(err);
         res.json(cars);
     })
-    return
+    return;
+    */
+    
     console.log("cars without query:" + req.payload)
-    if (!req.payload || !req.payload._id) {
+    if (authNeeded && (!req.payload || !req.payload._id)) {
         res.status(401).json({
             "message": "Unauthorized access!"
         })
     } else {
-        console.log('payload id:' + req.payload._id)
+        console.log('payload id:' + ((req.payload)?req.payload._id:'null'))
         schema.Cars.find(function(err, users){
             if(err) return next(err);
             res.json(users);
